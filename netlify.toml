@@ -1,0 +1,24 @@
+# Same forwarding rules as _redirects. Netlify reads either file.
+[[redirects]]
+  from = "/api/adsblol/*"
+  to = "https://api.adsb.lol/v2/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/adsbfi/*"
+  to = "https://opendata.adsb.fi/api/v2/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/airplaneslive/*"
+  to = "https://api.airplanes.live/v2/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/adsbdb/*"
+  to = "https://api.adsbdb.com/v0/:splat"
+  status = 200
+  force = true
