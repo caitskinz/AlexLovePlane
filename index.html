@@ -132,6 +132,7 @@ button.primary{background:var(--accent);color:var(--accent-ink);border-color:var
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .note{margin:6px 0 0;font-size:.85rem;color:var(--muted)}
 
+.reasons{margin:10px 0 0;padding-left:20px;color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}
 footer{margin-top:22px;font-size:.82rem;color:var(--muted)}
 footer a{color:inherit}
 </style>
@@ -227,11 +228,15 @@ const TYPES = {
   EC35:"Airbus H135", EC30:"Airbus H130", A109:"Leonardo AW109", B06:"Bell JetRanger"
 };
 
+/* These go through the site's own /api/ paths. Netlify (via the _redirects
+   file) or dev-server.js forwards them to the real APIs, because the APIs
+   don't accept requests straight from a browser page. */
 const SOURCES = [
-  { name: "adsb.lol",       url: (la, lo, nm) => `https://api.adsb.lol/v2/point/${la}/${lo}/${nm}` },
-  { name: "adsb.fi",        url: (la, lo, nm) => `https://opendata.adsb.fi/api/v2/lat/${la}/lon/${lo}/dist/${nm}` },
-  { name: "airplanes.live", url: (la, lo, nm) => `https://api.airplanes.live/v2/point/${la}/${lo}/${nm}` },
+  { name: "adsb.lol",       url: (la, lo, nm) => `/api/adsblol/point/${la}/${lo}/${nm}` },
+  { name: "adsb.fi",        url: (la, lo, nm) => `/api/adsbfi/lat/${la}/lon/${lo}/dist/${nm}` },
+  { name: "airplanes.live", url: (la, lo, nm) => `/api/airplaneslive/point/${la}/${lo}/${nm}` },
 ];
+const ROUTE_URL = cs => `/api/adsbdb/callsign/${encodeURIComponent(cs)}`;
 
 /* ------------------------------------------------------------------
    STATE
@@ -267,9 +272,17 @@ async function getJSON(url, ms = 9000) {
   const c = new AbortController();
   const t = setTimeout(() => c.abort(), ms);
   try {
-    const r = await fetch(url, { signal: c.signal });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return await r.json();
+    let r;
+    try { r = await fetch(url, { signal: c.signal }); }
+    catch (e) { throw new Error(e.name === "AbortError" ? "no answer after 9 seconds" : "network error"); }
+    const type = r.headers.get("content-type") || "";
+    if (type.includes("text/html")) throw new Error(`got a web page instead of data (HTTP ${r.status}), so the _redirects forwarding isn’t set up`);
+    if (!r.ok) {
+      const body = (await r.text().catch(() => "")).slice(0, 120);
+      throw new Error(`HTTP ${r.status}${body ? ": " + body : ""}`);
+    }
+    try { return await r.json(); }
+    catch (e) { throw new Error("reply wasn’t readable data"); }
   } finally { clearTimeout(t); }
 }
 const rad = d => d * Math.PI / 180;
@@ -299,6 +312,7 @@ function nzTime(d = new Date()) {
 ------------------------------------------------------------------- */
 async function fetchAircraft() {
   const nm = Math.max(1, Math.ceil(settings.radiusKm / 1.852));
+  const reasons = [];
   for (let i = 0; i < SOURCES.length; i++) {
     const idx = (sourceIndex + i) % SOURCES.length;
     const src = SOURCES[idx];
@@ -306,9 +320,14 @@ async function fetchAircraft() {
       const data = await getJSON(src.url(settings.lat.toFixed(4), settings.lon.toFixed(4), nm));
       sourceIndex = idx;
       return { list: data.ac || data.aircraft || [], source: src.name };
-    } catch (e) { console.warn("Source failed:", src.name, e); }
+    } catch (e) {
+      console.warn("Source failed:", src.name, e.message);
+      reasons.push(`${src.name}: ${e.message}`);
+    }
   }
-  throw new Error("All sources failed");
+  const err = new Error("All sources failed");
+  err.reasons = reasons;
+  throw err;
 }
 
 function matchAirline(cs) {
@@ -341,9 +360,9 @@ function lookupRoute(cs) {
   if (!cs || !/^[A-Z]{3}\d/.test(cs)) return Promise.resolve(null);
   if (!routeCache.has(cs)) {
     routeCache.set(cs,
-      getJSON(`https://api.adsbdb.com/v0/callsign/${encodeURIComponent(cs)}`)
+      getJSON(ROUTE_URL(cs))
         .then(d => (d && d.response && d.response.flightroute) || null)
-        .catch(() => { routeCache.delete(cs); return null; })
+        .catch(() => null)
     );
   }
   return routeCache.get(cs);
@@ -525,7 +544,7 @@ function render(planes, source) {
   planes.forEach(p => box.append(buildPass(p)));
 }
 
-function renderError() {
+function renderError(err) {
   const status = $("status");
   status.replaceChildren(el("span", "count", "Can’t reach the flight data"), el("span", null, `Retrying in ${REFRESH_SECONDS} seconds`));
   const box = $("passes");
@@ -533,8 +552,13 @@ function renderError() {
     const e = el("div", "empty");
     e.append(el("h2", null, "Can’t reach the flight data"),
              el("p", null, location.protocol === "file:"
-               ? "Some browsers block live data on pages opened straight from a file. Put this page on a free host like GitHub Pages or Netlify Drop and it will load."
-               : "All three data sources are down or blocked. The page will keep trying."));
+               ? "This page needs to be served, not opened as a file. Run dev-server.js, or put the folder on Netlify."
+               : "Here’s what each source said:"));
+    if (err && err.reasons && err.reasons.length) {
+      const ul = el("ul", "reasons");
+      err.reasons.forEach(r => ul.append(el("li", null, r)));
+      e.append(ul);
+    }
     box.replaceChildren(e);
   }
 }
@@ -554,7 +578,7 @@ async function refresh() {
     render(planes, result.source);
   } catch (e) {
     console.error(e);
-    renderError();
+    renderError(e);
   } finally { busy = false; }
 }
 function start() {

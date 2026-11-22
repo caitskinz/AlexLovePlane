@@ -1,0 +1,5 @@
+# Netlify forwards these to the real APIs, so the page never calls them directly.
+/api/adsblol/*        https://api.adsb.lol/v2/:splat          200
+/api/adsbfi/*         https://opendata.adsb.fi/api/v2/:splat  200
+/api/airplaneslive/*  https://api.airplanes.live/v2/:splat    200
+/api/adsbdb/*         https://api.adsbdb.com/v0/:splat        200
