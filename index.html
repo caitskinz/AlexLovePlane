@@ -86,20 +86,21 @@ h1{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weigh
 .empty h2{margin:0 0 4px;font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-size:1.7rem}
 .empty p{margin:0;color:var(--muted)}
 
-.pass{display:grid;grid-template-columns:1fr auto;background:var(--pass);border-radius:14px;position:relative}
+.pass{display:grid;grid-template-columns:minmax(0,1fr) 250px;background:var(--pass);border-radius:14px;position:relative}
 .band{grid-column:1/-1;background:var(--accent);color:var(--accent-ink);border-radius:14px 14px 0 0;
   padding:7px 18px;font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;
   font-size:1.05rem;letter-spacing:.06em}
-.pass-main{padding:16px 18px 18px;min-width:0}
-.pass-top{display:flex;align-items:center;gap:12px}
-.logo,.badge{width:56px;height:56px;border-radius:10px;flex:none}
-.logo{object-fit:contain;background:#fff;padding:5px}
-.badge{display:grid;place-items:center;color:#fff;font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;font-size:1.35rem}
-.who{min-width:0;flex:1}
-.airline{font-weight:600;font-size:1.08rem;line-height:1.2}
-.type{color:var(--muted);font-size:.92rem}
+.pass-main{padding:18px;min-width:0;display:flex;gap:18px;align-items:stretch}
+.pass-body{flex:1;min-width:0;height:var(--logo);display:flex;flex-direction:column;gap:4px;overflow:hidden}
+.pass-top{display:flex;align-items:baseline;gap:12px}
+.pass{--logo:180px}
+.logo,.badge{width:var(--logo);height:var(--logo);border-radius:12px;flex:none}
+.logo{object-fit:contain;background:#fff;padding:6px}
+.badge{display:grid;place-items:center;color:#fff;font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;font-size:2.6rem}
+.airline{flex:1;min-width:0;font-weight:600;font-size:1.1rem;line-height:1.2}
+.type{color:var(--muted);font-size:.92rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .flightno{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;font-size:2.5rem;line-height:1;text-align:right;color:var(--flight)}
-.route{display:flex;align-items:center;gap:14px;margin-top:16px}
+.route{display:flex;align-items:center;gap:14px;margin-top:auto}
 .port{min-width:0}
 .port b{display:block;color:var(--route);font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;font-size:2.1rem;line-height:1}
 .port span{display:block;color:var(--muted);font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -107,9 +108,9 @@ h1{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weigh
 .arrow{flex:1;min-width:40px;display:flex;align-items:center;gap:6px;color:var(--arrow)}
 .arrow::before,.arrow::after{content:"";flex:1;border-top:2px dotted var(--line)}
 .arrow svg{width:20px;height:20px;fill:currentColor;flex:none}
-.route-note{margin:0;color:var(--muted)}
+.route-note{margin:0;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 
-.pass-stub{margin:0;padding:16px 18px;border-left:2px dashed var(--line);display:grid;gap:8px;min-width:150px;align-content:center;position:relative}
+.pass-stub{margin:0;padding:14px 18px;border-left:2px dashed var(--line);display:grid;gap:6px;align-content:center;position:relative}
 .pass-stub::before,.pass-stub::after{content:"";position:absolute;left:-10px;width:18px;height:18px;border-radius:50%;background:var(--bg)}
 .pass-stub::before{top:-9px}
 .pass-stub::after{bottom:-9px}
@@ -118,9 +119,15 @@ h1{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weigh
 .pass-stub dt{color:var(--muted);font-size:.8rem}
 .pass-stub dd{margin:0;font-weight:600}
 
-@media (max-width:540px){
-  .pass{grid-template-columns:1fr}
-  .flightno{font-size:2.1rem}
+@media (max-width:700px){
+  .pass{grid-template-columns:1fr;--logo:128px}
+  .pass-main{gap:14px;padding:16px}
+  .badge{font-size:1.9rem}
+  .flightno{font-size:1.8rem}
+  .airline{font-size:1rem}
+  .port b{font-size:1.6rem}
+  .type{-webkit-line-clamp:1}
+  .route-note{-webkit-line-clamp:2;font-size:.88rem;line-height:1.3}
   .pass-stub{border-left:0;border-top:2px dashed var(--line);grid-template-columns:1fr 1fr;min-width:0}
   .pass-stub::before,.pass-stub::after{top:-10px;bottom:auto}
   .pass-stub::before{left:-9px;display:block !important}
@@ -157,7 +164,7 @@ footer a{color:inherit}
   <header>
     <div>
       <h1>What’s overhead</h1>
-      <p class="place" id="place">Sockburn, Christchurch</p>
+      <p class="place" id="place">House without soft-close draws, Christchurch</p>
     </div>
     <div class="head-right">
       <p class="status" id="status" aria-live="polite"><span class="count">Looking for planes…</span></p>
@@ -182,7 +189,7 @@ footer a{color:inherit}
       <div class="buttons">
         <button type="button" class="primary" id="save">Save</button>
         <button type="button" id="use-location">Use my current location</button>
-        <button type="button" id="reset">Back to Sockburn</button>
+        <button type="button" id="reset">Back to her house</button>
       </div>
     </div>
   </details>
@@ -364,7 +371,8 @@ function toPlane(a) {
   if (dist > settings.radiusKm) return null;
   const callsign = (a.flight || "").trim().toUpperCase();
   const airline = matchAirline(callsign);
-  const alt = typeof a.alt_baro === "number" ? a.alt_baro : (typeof a.alt_geom === "number" ? a.alt_geom : null);
+  let alt = typeof a.alt_baro === "number" ? a.alt_baro : (typeof a.alt_geom === "number" ? a.alt_geom : null);
+  if (alt != null && alt < 0 && typeof a.alt_geom === "number") alt = a.alt_geom;
   return {
     hex: a.hex || "", callsign, airline, alt, dist,
     type: (a.t || "").toUpperCase(), desc: a.desc || "", reg: a.r || "",
@@ -469,15 +477,15 @@ function buildPass(p) {
   if (isC17) art.append(el("div", "band", "GLOBEMASTER OVERHEAD"));
 
   const main = el("div", "pass-main");
+  const body = el("div", "pass-body");
   const top = el("div", "pass-top");
-  const who = el("div", "who");
   const typeLine = typeName(p) + (p.reg ? `, ${p.reg}` : "") + (p.airline && p.airline.note ? `. ${p.airline.note}` : "");
-  who.append(el("div", "airline", airlineName(p)), el("div", "type", typeLine));
-  top.append(logoFor(p), who, el("div", "flightno", flightNumber(p)));
-  main.append(top, buildRoute(p));
+  top.append(el("div", "airline", airlineName(p)), el("div", "flightno", flightNumber(p)));
+  body.append(top, el("div", "type", typeLine), buildRoute(p));
+  main.append(logoFor(p), body);
 
   const stub = el("dl", "pass-stub");
-  addStat(stub, "Altitude", p.alt != null ? `${Math.round(p.alt).toLocaleString("en-NZ")} ft` : "Unknown");
+  addStat(stub, "Altitude", p.alt == null ? "Unknown" : p.alt < 100 ? "Near the ground" : `${Math.round(p.alt).toLocaleString("en-NZ")} ft`);
   addStat(stub, "Speed", p.gs != null ? `${Math.round(p.gs * 1.852)} km/h` : "Unknown");
   addStat(stub, "Direction", headingText(p));
   addStat(stub, "From the house",
