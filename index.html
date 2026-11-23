@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>What’s overhead</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Overhead">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#F8F1E7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1D1427" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -68,7 +77,8 @@ h1{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weigh
 
 .scope{background:var(--pass);border-radius:22px;padding:14px 14px 10px;position:sticky;top:calc(16px + env(safe-area-inset-top,0px))}
 @media (max-width:780px){.scope{position:static;max-width:380px;margin:0 auto;width:100%}}
-.scope svg{display:block;width:100%;height:auto}
+.scope{display:flex;flex-direction:column}
+.scope svg{display:block;width:100%;height:auto;margin:auto 0}
 .scope .ring{fill:none;stroke:var(--ring);stroke-width:1}
 .scope .ring-inner{stroke-dasharray:2 3}
 .scope .north,.scope .ringlabel,.scope .aplabel{fill:var(--muted);font:600 8px "Barlow",system-ui,sans-serif}
@@ -91,12 +101,12 @@ h1{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weigh
   padding:7px 18px;font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;
   font-size:1.05rem;letter-spacing:.06em}
 .pass-main{padding:18px;min-width:0;display:flex;gap:18px;align-items:stretch}
-.pass-body{flex:1;min-width:0;height:var(--logo);display:flex;flex-direction:column;gap:4px;overflow:hidden}
+.pass-body{flex:1;min-width:0;height:var(--h,var(--logo));display:flex;flex-direction:column;gap:4px;overflow:hidden}
 .pass-top{display:flex;align-items:baseline;gap:12px}
 .pass{--logo:180px}
-.logo,.badge{width:var(--logo);height:var(--logo);border-radius:12px;flex:none}
+.logo,.badge{width:var(--logo);height:var(--logo);border-radius:12px;flex:none;align-self:center}
 .logo{object-fit:contain;background:#fff;padding:6px}
-.badge{display:grid;place-items:center;color:#fff;font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;font-size:2.6rem}
+.badge{display:grid;place-items:center;color:#fff;font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;font-size:clamp(1.2rem,calc(var(--logo) * .3),4.5rem)}
 .airline{flex:1;min-width:0;font-weight:600;font-size:1.1rem;line-height:1.2}
 .type{color:var(--muted);font-size:.92rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .flightno{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;font-size:2.5rem;line-height:1;text-align:right;color:var(--flight)}
@@ -115,6 +125,33 @@ h1{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weigh
 .pass-stub::before{top:-9px}
 .pass-stub::after{bottom:-9px}
 .pass:has(.band) .pass-stub::before{display:none}
+.pass.tall{grid-template-columns:1fr}
+.pass.tall .pass-body{gap:6px}
+.pass.tall .route{margin-top:auto}
+.pass.tall .pass-stub{border-left:0;border-top:2px dashed var(--line);padding:12px 0 0;margin-top:6px;grid-template-columns:1fr 1fr;column-gap:16px}
+.pass.tall .pass-body{container-type:inline-size}
+@container (min-width:520px){.pass.tall .pass-stub{grid-template-columns:repeat(4,1fr)}}
+.pass.compact .type{-webkit-line-clamp:1}
+.pass.compact .flightno{font-size:2.1rem}
+.pass.compact .port b{font-size:1.75rem}
+.pass.compact .route-note{-webkit-line-clamp:2;font-size:.9rem;line-height:1.3}
+.pass.compact .pass-stub{padding-top:8px;margin-top:4px;row-gap:4px}
+.pass.compact .pass-stub dd{font-size:.95rem}
+.pass.compact .pass-body{gap:3px}
+.pass.compact .pass-stub dt{font-size:.75rem;line-height:1.2}
+.pass.compact .pass-stub dd{line-height:1.25}
+.pass.compact .port span{font-size:.82rem}
+
+/* Landscape tablets: a slimmer header leaves more room for the passes */
+@media (orientation:landscape) and (min-width:781px) and (max-height:900px){
+  .wrap{padding-top:16px}
+  header{margin-bottom:14px;align-items:center}
+  h1{font-size:2.4rem}
+  .place{margin-top:2px}
+  .head-right{flex-direction:row;align-items:center;gap:16px}
+}
+.pass.tall .pass-stub::before,.pass.tall .pass-stub::after{display:none}
+.is-mil.tall .pass-stub{border-color:var(--mil-line)}
 .pass-stub div{display:flex;flex-direction:column}
 .pass-stub dt{color:var(--muted);font-size:.8rem}
 .pass-stub dd{margin:0;font-weight:600}
@@ -173,7 +210,7 @@ footer a{color:inherit}
   </header>
 
   <div class="layout">
-    <aside class="scope" aria-label="Map of planes around the house">
+    <aside class="scope" id="scope" aria-label="Map of planes around the house">
       <svg id="scope-svg" viewBox="-112 -112 224 224" role="img" aria-label="Top-down view with the house in the centre"></svg>
       <p class="scope-caption" id="scope-caption">The house is in the middle. North is up.</p>
     </aside>
@@ -207,7 +244,7 @@ footer a{color:inherit}
 /* ------------------------------------------------------------------
    SETTINGS
 ------------------------------------------------------------------- */
-const DEFAULTS = { lat: -43.511941, lon: 172.688451, radiusKm: 12, name: "House without soft-close draws, Christchurch" };
+const DEFAULTS = { lat: -43.511941, lon: 172.688451, radiusKm: 4, name: "House without soft-close draws, Christchurch" };
 const REFRESH_SECONDS = 15;
 const LOGO_FOLDER = "logos/";
 const AIRPORT = { lat: -43.4894, lon: 172.5322 }; // Christchurch Airport
@@ -384,6 +421,7 @@ function toPlane(a) {
 
 function lookupRoute(cs) {
   if (!cs || !/^[A-Z]{3}\d/.test(cs)) return Promise.resolve(null);
+  if (routeCache.size > 300) routeCache.clear();
   if (!routeCache.has(cs)) {
     routeCache.set(cs,
       getJSON(ROUTE_URL(cs))
@@ -558,17 +596,101 @@ function render(planes, source) {
   box.replaceChildren();
   const c17 = planes.some(p => p.type === "C17");
   document.title = c17 ? "C-17 overhead!" : "What’s overhead";
-  if (c17) box.append(el("div", "alert", "A C-17 is overhead right now. Go outside and look up!"));
+  if (c17) box.append(el("div", "alert", "C-17 overhead! Go outside and look up!"));
 
   if (n === 0) {
     const e = el("div", "empty");
     e.append(el("h2", null, "Clear skies right now"),
              el("p", null, `Nothing within ${settings.radiusKm} km. Checking again every ${REFRESH_SECONDS} seconds.`));
     box.append(e);
+    fitToMap();
     return;
   }
   planes.forEach(p => box.append(buildPass(p)));
+  fitToMap();
 }
+
+/* ------------------------------------------------------------------
+   FIT TO MAP — on wide screens, one pass fills the map's height and
+   two passes split it. If the passes need more room than that to fit
+   their details, the map card grows to match instead, so the two
+   columns always end level. Three or more passes use their own height.
+------------------------------------------------------------------- */
+const wideQuery = window.matchMedia("(min-width: 781px)");
+const PASS_GAP = 14;      // matches .passes gap
+const MAIN_PAD = 36;      // .pass-main top + bottom padding
+const MIN_LOGO = 130;     // smallest the drawings get
+
+const MIN_BODY = 250;     // narrowest the flight details column can be
+
+function resetPass(p) {
+  p.classList.remove("tall", "compact");
+  p.style.removeProperty("--logo");
+  p.style.removeProperty("--h");
+  const stub = p.querySelector(".pass-stub");
+  if (stub.parentElement !== p) p.append(stub);
+}
+
+/* Wide screens: the map fills the screen height (on landscape screens like
+   a tablet), and the passes share that height evenly. Each pass keeps its
+   drawing square and as tall as the pass. If there are too many planes to
+   fit, passes get more compact, and only then does the list scroll. */
+function fitToMap() {
+  const scope = $("scope"), box = $("passes");
+  const passes = [...box.querySelectorAll(".pass")];
+  const empty = box.querySelector(".empty");
+  scope.style.minHeight = "";
+  passes.forEach(resetPass);
+  if (empty) empty.style.minHeight = "";
+  if (!wideQuery.matches) return;
+
+  let base = scope.offsetHeight;
+  if (window.innerWidth > window.innerHeight) {
+    const top = scope.getBoundingClientRect().top + window.scrollY;
+    base = Math.max(base, Math.floor(window.innerHeight - top - 20));
+    scope.style.minHeight = `${base}px`;
+  }
+
+  const alert = box.querySelector(".alert");
+  const alertH = alert ? alert.offsetHeight + PASS_GAP : 0;
+  if (empty) { empty.style.minHeight = `${base - alertH}px`; return; }
+  const n = passes.length;
+  if (n === 0) return;
+
+  passes.forEach(p => { p.classList.add("tall"); p.querySelector(".pass-body").append(p.querySelector(".pass-stub")); });
+  const bandOf = p => { const b = p.querySelector(".band"); return b ? b.offsetHeight : 0; };
+  const maxLogo = passes[0].offsetWidth - MAIN_PAD - 18 - MIN_BODY;
+
+  const apply = per => passes.forEach(p => {
+    const h = per - bandOf(p) - MAIN_PAD;
+    p.style.setProperty("--h", `${h}px`);
+    p.style.setProperty("--logo", `${Math.max(56, Math.min(h, maxLogo))}px`);
+  });
+  const overflow = () => Math.max(...passes.map(p => {
+    const body = p.querySelector(".pass-body");
+    const h = body.offsetHeight;
+    body.style.height = "auto";
+    const natural = body.offsetHeight;
+    body.style.height = "";
+    return natural - h;
+  }));
+
+  let per = Math.floor((base - alertH - PASS_GAP * (n - 1)) / n);
+  apply(per);
+  let over = overflow();
+  if (over > 0) {
+    passes.forEach(p => p.classList.add("compact"));
+    apply(per);
+    over = overflow();
+  }
+  if (over > 0) { per += over; apply(per); }
+
+  const total = alertH + n * per + PASS_GAP * (n - 1);
+  if (total > base && n <= 2) scope.style.minHeight = `${total}px`;
+}
+let resizeTimer;
+window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitToMap, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitToMap);
 
 function renderError(err) {
   const status = $("status");
@@ -669,6 +791,23 @@ $("theme-toggle").addEventListener("click", () => {
 });
 darkQuery.addEventListener("change", updateToggle);
 updateToggle();
+
+/* ------------------------------------------------------------------
+   KEEP THE SCREEN ON — asks the tablet not to sleep while the page is
+   showing. Some browsers only allow this after a tap, so it also tries
+   again on the first touch.
+------------------------------------------------------------------- */
+let wakeLock = null;
+async function keepAwake() {
+  if (!("wakeLock" in navigator) || wakeLock || document.visibilityState !== "visible") return;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release", () => { wakeLock = null; });
+  } catch (e) { /* not allowed yet; will retry on next tap */ }
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") keepAwake(); });
+document.addEventListener("pointerdown", keepAwake);
+keepAwake();
 
 fillForm();
 start();
